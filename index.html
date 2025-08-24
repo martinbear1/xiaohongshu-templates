@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>小红书笔记模板</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Helvetica Neue", Arial, sans-serif;
+        }
+        
+        body {
+            background-color: #f4f4f4;
+            color: #333;
+            line-height: 1.6;
+            padding: 12px;
+            max-width: 100%;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 15px 0;
+        }
+        
+        h1 {
+            font-size: 22px;
+            color: #ff2741;
+            font-weight: bold;
+        }
+        
+        .note-card {
+            background: white;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .title-section, .content-section {
+            margin-bottom: 15px;
+            position: relative;
+            padding-right: 70px;
+        }
+        
+        .note-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .note-content {
+            font-size: 15px;
+            color: #333;
+            white-space: pre-line;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background: #ff2741;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 6px 12px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .copy-btn:hover {
+            background: #e6172f;
+        }
+        
+        .tags {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #ff2741;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 100;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .toast.show {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>小红书笔记模板</h1>
+        </header>
+        
+        <div class="notes-container">
+            <!-- 模板1 -->
+            <div class="note-card" id="template1">
+                <div class="title-section">
+                    <div class="note-title">巷味寻踪|二嫂葱油拌面</div>
+                    <button class="copy-btn" data-target="title1">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">从前巷口有鲜市，如今巷尾飘面香
+上海弄堂的葱油清香撞上川渝泡菜坛的酸甜脆爽，江湖恩怨，筷子调停。
+『食客判词』
+"本以为葱油面是出老戏，谁知海苔碎如惊堂木，泡萝卜似醒酒汤"——律师老王
+『鲜鱼巷宣』
+**葱油裹成金缕衣，酸爽破开味结界**
+**浓淡相杀，才是拌面最高兵法**
+**来鲜鱼巷，当个潇洒判官**
+**一筷断油腻，三口定乾坤**
+⏳ 赏味律：拌毕需在30秒内挑开，迟则面判无期。
+📍 现拌坐标：鲜鱼巷小吃&二嫂米线最近门店↓↓↓↓
+#葱油拌面 #寻找风味小味 #拌面 #鲜鱼巷亭城小吃集 #二嫂米线 #滁州美食 #巷子里的美食 #美食判官</div>
+                    <button class="copy-btn" data-target="content1">复制正文</button>
+                </div>
+                <div class="tags">#美食 #探店 #小吃</div>
+            </div>
+            
+            <!-- 模板2 -->
+            <div class="note-card" id="template2">
+                <div class="title-section">
+                    <div class="note-title">夜宵时间到！在你最脆弱的时候报菜名！</div>
+                    <button class="copy-btn" data-target="title2">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">报菜品：
+p2：葱油拌面
+p3：麻酱凉皮
+p4：红油鸡丁米粉
+p5：牛肉砂锅粉丝
+p6：天长西路店
+p7：香辣牛肉米线
+p8：番茄肥牛米线
+p9：老陕油泼面
+p10：酸豇豆炒饭
+#这个模板有点东西 #旅途中的地道美食 #跟着本地人吃就对了 #家乡的地道美食 #深夜饿了就该大吃一顿 #夜宵时间到 #夜宵 #到点了干饭人上号 #午夜饭来点新花样 #整点儿宵夜 #滁州美食 #巷子里的美食 #鲜鱼巷亭城小吃集</div>
+                    <button class="copy-btn" data-target="content2">复制正文</button>
+                </div>
+                <div class="tags">#夜宵 #美食推荐</div>
+            </div>
+            
+            <!-- 模板3 -->
+            <div class="note-card" id="template3">
+                <div class="title-section">
+                    <div class="note-title">米线时间到！原图直出的饭张力！</div>
+                    <button class="copy-btn" data-target="title3">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">一口鲜香，Good若金汤
+#鲜鱼巷亭城小吃集 #米线 #金汤 #金汤肥牛米线 #肥汁米线 #米粉 #想记录下此刻 #这个模板有点东西</div>
+                    <button class="copy-btn" data-target="content3">复制正文</button>
+                </div>
+                <div class="tags">#米线 #美食摄影</div>
+            </div>
+            
+            <!-- 模板4 -->
+            <div class="note-card" id="template4">
+                <div class="title-section">
+                    <div class="note-title">在滁州，夜宵小吃怎能少了一份耗油素鸡！</div>
+                    <button class="copy-btn" data-target="title4">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">素鸡切薄片，热油酥炸，浇上蚝油汁，爱吃辣的再配上一抹祖传的剁椒酱。哎呀！没有素鸡这些豆制品我可怎么活！！！
+#鲜鱼巷亭城小吃集 #滁州美食 #寻找风味小味 #整点儿宵夜 #万物皆可油炸 #素鸡 #蚝油 #蚝油串</div>
+                    <button class="copy-btn" data-target="content4">复制正文</button>
+                </div>
+                <div class="tags">#滁州美食 #小吃</div>
+            </div>
+            
+            <!-- 模板5 -->
+            <div class="note-card" id="template5">
+                <div class="title-section">
+                    <div class="note-title">广式腊味煲仔饭，黄金锅巴窝个蛋。</div>
+                    <button class="copy-btn" data-target="title5">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">正宗广式腊肠，
+正宗酱汁，
+现炕的金黄锅巴，
+窝一个流心蛋，
+才是一碗正宗的广式腊味煲仔饭！
+#鲜鱼巷亭城小吃集 #巷子里的美食 #广式腊味煲仔饭 #煲仔饭 #锅巴 #腊肠 #流心蛋 #米饭</div>
+                    <button class="copy-btn" data-target="content5">复制正文</button>
+                </div>
+                <div class="tags">#煲仔饭 #广式美食</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toast" id="toast">复制成功！</div>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const copyButtons = document.querySelectorAll('.copy-btn');
+            const toast = document.getElementById('toast');
+            
+            copyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    let textToCopy = '';
+                    
+                    if (target.startsWith('title')) {
+                        const index = target.replace('title', '');
+                        const titleElement = document.querySelector(`#template${index} .note-title`);
+                        textToCopy = titleElement.textContent;
+                    } else if (target.startsWith('content')) {
+                        const index = target.replace('content', '');
+                        const contentElement = document.querySelector(`#template${index} .note-content`);
+                        textToCopy = contentElement.textContent;
+                    }
+                    
+                    navigator.clipboard.writeText(textToCopy).then(() => {
+                        toast.textContent = '复制成功！';
+                        toast.classList.add('show');
+                        
+                        setTimeout(() => {
+                            toast.classList.remove('show');
+                        }, 2000);
+                    }).catch(err => {
+                        console.error('复制失败:', err);
+                        toast.textContent = '复制失败，请长按文本手动复制';
+                        toast.classList.add('show');
+                        
+                        setTimeout(() => {
+                            toast.classList.remove('show');
+                        }, 2000);
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
