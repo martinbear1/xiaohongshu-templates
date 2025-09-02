@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>小红书笔记模板</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         * {
             margin: 0;
@@ -13,7 +14,7 @@
         }
         
         body {
-            background-color: #f4f4f4;
+            background-color: #faf0f0;
             color: #333;
             line-height: 1.6;
             padding: 12px;
@@ -30,12 +31,56 @@
             text-align: center;
             margin-bottom: 20px;
             padding: 15px 0;
+            position: sticky;
+            top: 0;
+            background: linear-gradient(to right, #ff2741, #ff6b6b);
+            border-radius: 12px;
+            color: white;
+            box-shadow: 0 4px 12px rgba(255, 39, 65, 0.2);
+            z-index: 10;
         }
         
         h1 {
             font-size: 22px;
-            color: #ff2741;
             font-weight: bold;
+        }
+        
+        h2 {
+            font-size: 14px;
+            font-weight: normal;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .style-tabs {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+        
+        .style-tab {
+            padding: 10px 20px;
+            background: white;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        
+        .style-tab.active {
+            background: #ff2741;
+            color: white;
+        }
+        
+        .notes-container {
+            display: block;
+        }
+        
+        .notes-container.hidden {
+            display: none;
         }
         
         .note-card {
@@ -44,49 +89,115 @@
             padding: 16px;
             margin-bottom: 20px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-        }
-        
-        .title-section, .content-section {
-            margin-bottom: 15px;
+            transition: all 0.3s ease;
+            overflow: hidden;
             position: relative;
-            padding-right: 70px;
         }
         
-        .note-title {
+        .note-card.expanded {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            margin: 20px 0;
+        }
+        
+        .tags-preview {
+            font-size: 13px;
+            color: #ff2741;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        
+        .title-preview {
             font-size: 18px;
             font-weight: bold;
-            margin-bottom: 8px;
             color: #333;
+            flex: 1;
+            padding-right: 10px;
+        }
+        
+        .title-copy-btn {
+            display: none;
+            background: #ff2741;
+            color: white;
+            border: none;
+            border-radius: 15px;
+            padding: 8px 14px;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            min-width: 80px;
+            margin-right: 30px;
+        }
+        
+        .content-section {
+            display: flex;
+            justify-content: space-between;
         }
         
         .note-content {
             font-size: 15px;
             color: #333;
             white-space: pre-line;
+            max-height: 0;
+            opacity: 0;
+            transition: all 0.4s ease;
+            flex: 1;
+            padding-right: 10px;
         }
         
-        .copy-btn {
-            position: absolute;
-            right: 0;
-            top: 0;
+        .content-copy-btn {
+            display: none;
             background: #ff2741;
             color: white;
             border: none;
             border-radius: 15px;
-            padding: 6px 12px;
-            font-size: 13px;
+            padding: 8px 14px;
+            font-size: 14px;
             cursor: pointer;
-            transition: background 0.3s;
+            white-space: nowrap;
+            align-self: flex-start;
+            margin-top: 5px;
+            min-width: 80px;
+            margin-right: 30px;
         }
         
-        .copy-btn:hover {
-            background: #e6172f;
+        .note-card.expanded .note-content {
+            max-height: 1000px;
+            opacity: 1;
+            margin-bottom: 10px;
         }
         
-        .tags {
-            margin-top: 10px;
-            font-size: 13px;
+        .note-card.expanded .title-copy-btn,
+        .note-card.expanded .content-copy-btn {
+            display: block;
+        }
+        
+        .expand-icon {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            color: #aaa;
+            transition: transform 0.3s ease;
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 50%;
+        }
+        
+        .note-card.expanded .expand-icon {
+            transform: rotate(180deg);
             color: #ff2741;
+            background: rgba(255, 39, 65, 0.1);
         }
         
         .toast {
@@ -106,106 +217,880 @@
         .toast.show {
             opacity: 1;
         }
+        
+        @media (max-width: 360px) {
+            .title-preview {
+                font-size: 16px;
+            }
+            
+            .note-content {
+                font-size: 14px;
+            }
+            
+            .title-copy-btn,
+            .content-copy-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+                min-width: 70px;
+                margin-right: 25px;
+            }
+            
+            .expand-icon {
+                right: 12px;
+                top: 12px;
+            }
+            
+            .style-tab {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>小红书笔记模板</h1>
+            <h2>点击笔记查看详情和复制功能</h2>
         </header>
         
-        <div class="notes-container">
+        <div class="style-tabs">
+            <div class="style-tab active" data-target="blogger-style">探店博主风</div>
+            <div class="style-tab" data-target="real-style">真实素人风</div>
+        </div>
+        
+        <!-- 探店博主风 -->
+        <div class="notes-container" id="blogger-style">
             <!-- 模板1 -->
             <div class="note-card" id="template1">
+                <div class="tags-preview">【闺蜜探店篇】 #美食探店 #闺蜜聚餐</div>
                 <div class="title-section">
-                    <div class="note-title">巷味寻踪|二嫂葱油拌面</div>
-                    <button class="copy-btn" data-target="title1">复制标题</button>
+                    <div class="title-preview">和闺蜜在滁州巷子里发现的宝藏小吃店！人均20+吃到扶墙！</div>
+                    <button class="title-copy-btn" data-target="title1">复制标题</button>
                 </div>
                 <div class="content-section">
-                    <div class="note-content">从前巷口有鲜市，如今巷尾飘面香
-上海弄堂的葱油清香撞上川渝泡菜坛的酸甜脆爽，江湖恩怨，筷子调停。
-『食客判词』
-"本以为葱油面是出老戏，谁知海苔碎如惊堂木，泡萝卜似醒酒汤"——律师老王
-『鲜鱼巷宣』
-**葱油裹成金缕衣，酸爽破开味结界**
-**浓淡相杀，才是拌面最高兵法**
-**来鲜鱼巷，当个潇洒判官**
-**一筷断油腻，三口定乾坤**
-⏳ 赏味律：拌毕需在30秒内挑开，迟则面判无期。
-📍 现拌坐标：鲜鱼巷小吃&二嫂米线最近门店↓↓↓↓
-#葱油拌面 #寻找风味小味 #拌面 #鲜鱼巷亭城小吃集 #二嫂米线 #滁州美食 #巷子里的美食 #美食判官</div>
-                    <button class="copy-btn" data-target="content1">复制正文</button>
+                    <div class="note-content">周末和闺蜜@XXX 在滁州逛吃，被本地人推荐了这家「鲜鱼巷」！
+我们点了【金汤肥牛米线】和【番茄酥肉米线】，汤底也太浓郁了吧！金汤酸辣开胃，番茄汤浓到挂勺，肥牛和酥肉都给得好多！
+-
+小吃点了【蚝油素鸡】和【酥炸蘑菇】，素鸡炸过再卤，吸饱了蚝油汁，一口下去超满足！蘑菇外酥里嫩，像在吃小零食！
+-
+最后用【红豆酒酿饮】干杯结束战斗！闺蜜说下次还要来试试拌面！
+📍：鲜鱼巷亭城小吃集（天长西路店）
+#闺蜜探店 #滁州美食 #鲜鱼巷亭城小吃集 #番茄肥牛米线 #周末去哪儿
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content1">复制正文</button>
                 </div>
-                <div class="tags">#美食 #探店 #小吃</div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
             </div>
             
             <!-- 模板2 -->
             <div class="note-card" id="template2">
+                <div class="tags-preview">【学生党必看篇】 #学生优惠 #性价比美食</div>
                 <div class="title-section">
-                    <div class="note-title">夜宵时间到！在你最脆弱的时候报菜名！</div>
-                    <button class="copy-btn" data-target="title2">复制标题</button>
+                    <div class="title-preview">8.8元的葱油拌面！滁州学生党的食堂平替，香哭了！</div>
+                    <button class="title-copy-btn" data-target="title2">复制标题</button>
                 </div>
                 <div class="content-section">
-                    <div class="note-content">报菜品：
-p2：葱油拌面
-p3：麻酱凉皮
-p4：红油鸡丁米粉
-p5：牛肉砂锅粉丝
-p6：天长西路店
-p7：香辣牛肉米线
-p8：番茄肥牛米线
-p9：老陕油泼面
-p10：酸豇豆炒饭
-#这个模板有点东西 #旅途中的地道美食 #跟着本地人吃就对了 #家乡的地道美食 #深夜饿了就该大吃一顿 #夜宵时间到 #夜宵 #到点了干饭人上号 #午夜饭来点新花样 #整点儿宵夜 #滁州美食 #巷子里的美食 #鲜鱼巷亭城小吃集</div>
-                    <button class="copy-btn" data-target="content2">复制正文</button>
+                    <div class="note-content">分享一个我们宿舍的宝藏外卖据点！「鲜鱼巷」的葱油拌面真的只要8块8！
+面条煮得刚刚好，淋上喷香的葱油，自己再加点醋和辣椒油一拌，香迷糊了！关键是分量足，男生也能吃饱。
+-
+【南昌拌粉】也是8.8，花生米和萝卜干超多，拌开每根粉都裹着酱料。
+下课和室友一起点，人均十块就能解决一顿饭，月底救星了属于是！
+#学生党美食 #葱油拌面 #性价比之王 #滁州大学城美食 #外卖推荐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content2">复制正文</button>
                 </div>
-                <div class="tags">#夜宵 #美食推荐</div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
             </div>
             
             <!-- 模板3 -->
             <div class="note-card" id="template3">
+                <div class="tags-preview">【深夜食堂篇】 #夜宵推荐 #治愈美食</div>
                 <div class="title-section">
-                    <div class="note-title">米线时间到！原图直出的饭张力！</div>
-                    <button class="copy-btn" data-target="title3">复制标题</button>
+                    <div class="title-preview">深夜加班结束，被这碗砂锅米线治愈了…</div>
+                    <button class="title-copy-btn" data-target="title3">复制标题</button>
                 </div>
                 <div class="content-section">
-                    <div class="note-content">一口鲜香，Good若金汤
-#鲜鱼巷亭城小吃集 #米线 #金汤 #金汤肥牛米线 #肥汁米线 #米粉 #想记录下此刻 #这个模板有点东西</div>
-                    <button class="copy-btn" data-target="content3">复制正文</button>
+                    <div class="note-content">晚上11点下班，整个人饿得前胸贴后背。
+公司楼下的「鲜鱼巷」还亮着灯，果断进去点了一份【砂锅丸子米线】。
+-
+砂锅端上来还咕嘟咕嘟冒着泡，热气瞬间糊了眼镜。汤头很鲜，丸子QQ弹弹，米线吸满了汤汁。
+一口热汤下肚，所有的疲惫和坏心情都被熨平了。
+果然，人间烟火气，最抚凡人心。
+#深夜食堂 #砂锅米线 #治愈美食 #夜宵时间到 #打工人的晚餐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content3">复制正文</button>
                 </div>
-                <div class="tags">#米线 #美食摄影</div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
             </div>
             
             <!-- 模板4 -->
             <div class="note-card" id="template4">
+                <div class="tags-preview">【美食评测篇】 #美食测评 #真实评价</div>
                 <div class="title-section">
-                    <div class="note-title">在滁州，夜宵小吃怎能少了一份耗油素鸡！</div>
-                    <button class="copy-btn" data-target="title4">复制标题</button>
+                    <div class="title-preview">网红「二嫂葱油拌面」到底好不好吃？真实食客测评！</div>
+                    <button class="title-copy-btn" data-target="title4">复制标题</button>
                 </div>
                 <div class="content-section">
-                    <div class="note-content">素鸡切薄片，热油酥炸，浇上蚝油汁，爱吃辣的再配上一抹祖传的剁椒酱。哎呀！没有素鸡这些豆制品我可怎么活！！！
-#鲜鱼巷亭城小吃集 #滁州美食 #寻找风味小味 #整点儿宵夜 #万物皆可油炸 #素鸡 #蚝油 #蚝油串</div>
-                    <button class="copy-btn" data-target="content4">复制正文</button>
+                    <div class="note-content">看到好多人在推鲜鱼巷的葱油拌面，今天特地来试试看！
+「二嫂葱油拌面」8.8元：面条是偏粗有嚼劲的那种，葱油熬得很香，焦而不苦。海苔碎和泡萝卜是灵魂搭配，增加了口感和解腻。一定要趁热快速拌匀，不然容易坨。
+-
+「蚝油素鸡」7元：名不虚传！豆制品爱好者必点，炸过后又卤的，非常入味。
+总结：性价比超高，味道在线，值得一试！
+#美食测评 #葱油拌面 #鲜鱼巷亭城小吃集 #滁州美食 #真实评价
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content4">复制正文</button>
                 </div>
-                <div class="tags">#滁州美食 #小吃</div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
             </div>
             
             <!-- 模板5 -->
             <div class="note-card" id="template5">
+                <div class="tags-preview">【情侣约会篇】 #情侣日常 #约会餐厅</div>
                 <div class="title-section">
-                    <div class="note-title">广式腊味煲仔饭，黄金锅巴窝个蛋。</div>
-                    <button class="copy-btn" data-target="title5">复制标题</button>
+                    <div class="title-preview">"宝贝，这个肥牛给你吃～" 和男票的周末美食探索！</div>
+                    <button class="title-copy-btn" data-target="title5">复制标题</button>
                 </div>
                 <div class="content-section">
-                    <div class="note-content">正宗广式腊肠，
-正宗酱汁，
-现炕的金黄锅巴，
-窝一个流心蛋，
-才是一碗正宗的广式腊味煲仔饭！
-#鲜鱼巷亭城小吃集 #巷子里的美食 #广式腊味煲仔饭 #煲仔饭 #锅巴 #腊肠 #流心蛋 #米饭</div>
-                    <button class="copy-btn" data-target="content5">复制正文</button>
+                    <div class="note-content">和男票的周末日常就是寻找各种好吃的！
+这家店是我们的新发现，我超爱他家的【番茄肥牛米线】，汤底超级浓郁，酸酸甜甜的。
+男票点了【香辣牛肉米线】，说牛肉炖得超级烂糊，辣得很过瘾！
+-
+我们还share了一份【蚝油年糕】，甜咸口的酱汁裹着糯叽叽的年糕，好吃！
+最后用我的【红豆酒酿】换了他半杯【酸梅汁】，冰冰凉凉超解辣！
+#情侣日常 #美食打卡 #番茄肥牛米线 #滁州探店 #约会餐厅
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content5">复制正文</button>
                 </div>
-                <div class="tags">#煲仔饭 #广式美食</div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板6 -->
+            <div class="note-card" id="template6">
+                <div class="tags-preview">【小吃专场篇】 #街头美食 #小吃推荐</div>
+                <div class="title-section">
+                    <div class="title-preview">在滁州，没吃过他家的蚝油串，真的会遗憾！</div>
+                    <button class="title-copy-btn" data-target="title6">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">为我心中的滁州小吃天花板——鲜鱼巷的蚝油串疯狂打call！
+【蚝油素鸡】必点！炸过的素鸡泡在蚝油汁里，一口爆汁，豆香满满。
+【蚝油年糕】外皮有点脆，里面糯糯的，挂满汤汁绝了。
+【酥炸蘑菇】8块钱一大份，香酥可口，吃起来像肉一样！
+-
+建议每样都来一串，再配上一碗清爽的米粉，完美！
+#蚝油串 #滁州小吃 #街头美食 #鲜鱼巷亭城小吃集 #美食推荐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content6">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板7 -->
+            <div class="note-card" id="template7">
+                <div class="tags-preview">【饮料测评篇】 #饮品推荐 #解辣神器</div>
+                <div class="title-section">
+                    <div class="title-preview">3元的酸梅汁！8元的红豆酒酿！这家的饮料是来报恩的吧？</div>
+                    <button class="title-copy-btn" data-target="title7">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">本来只是来吃米线的，结果完全被饮料圈粉了！
+【秘制酸梅汁】才3块钱！酸甜冰爽，吃辣米线的时候喝一口，瞬间解辣，比外面奶茶店十几块的好喝多了！
+【红豆酒酿饮】8元，红豆煮得超级软烂，酒酿味道很浓，不会过甜，会员第二杯半价，和姐妹一起share超划算。
+-
+吃香喝辣的同时，必须有它们的身影！
+#饮料测评 #解辣神器 #性价比饮品 #鲜鱼巷亭城小吃集 #红豆酒酿
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content7">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板8 -->
+            <div class="note-card" id="template8">
+                <div class="tags-preview">【秋冬暖胃篇】 #秋冬美食 #暖心暖胃</div>
+                <div class="title-section">
+                    <div class="title-preview">咕嘟咕嘟～降温了，就想念这一锅砂锅米线！</div>
+                    <button class="title-copy-btn" data-target="title8">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">天气一冷，就疯狂想吃这种咕嘟咕嘟冒着热气的砂锅！
+鲜鱼巷的【砂锅肥牛米线】是我的最爱，18元一份。
+-
+用的是那种传统小砂锅，端上桌还在沸腾，汤底很鲜，肥牛片量也不少，米线煮得软硬适中。
+吃完全身都暖和了，是秋冬独有的幸福感没错了！
+#砂锅米线 #秋冬美食 #暖心暖胃 #鲜鱼巷亭城小吃集 #美食推荐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content8">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板9 -->
+            <div class="note-card" id="template9">
+                <div class="tags-preview">【宝藏发现篇】 #美食探店 #宝藏小店</div>
+                <div class="title-section">
+                    <div class="title-preview">滁州探店 | 藏在巷子里的'小吃集合店'，从面到粉到饭应有尽有！</div>
+                    <button class="title-copy-btn" data-target="title9">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">Hello大家好，今天分享一家我的宝藏小店「鲜鱼巷亭城小吃集」。
+这家店真的啥都有，选择困难症可能会崩溃哈哈！
+-
+米线、拌面、拌粉、砂锅、米饭、小吃…你能想到的主食这里基本都有。
+亲测推荐：【金汤肥牛米线】汤底绝了、【葱油拌面】性价比之王、【蚝油素鸡】必点小吃、【腊味煲仔饭】锅巴超香。
+-
+环境就是普通市井小店，饭点人很多，味道是真心不错！
+#滁州探店 #美食探店 #鲜鱼巷亭城小吃集 #跟我来探店 #宝藏小店
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content9">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板10 -->
+            <div class="note-card" id="template10">
+                <div class="tags-preview">【真实食客篇】 #真实测评 #吃货日常</div>
+                <div class="title-section">
+                    <div class="title-preview">吃了三次鲜鱼巷，来聊聊哪些值得点！</div>
+                    <button class="title-copy-btn" data-target="title10">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">刷到太多推荐，忍不住来吃了三次，给大家做个真实反馈！
+✅ 【红油鸡丁米粉】15元：好吃！鸡丁很嫩，红油超香，必点！
+✅ 【葱油拌面】8.8元：便宜好吃，冲！
+✅ 【蚝油串】系列：素鸡、年糕、海带结都无脑冲！
+⭕ 【香辣牛肉米线】22元：牛肉不错，但个人觉得性价比不如其他款。
+-
+总结：小吃和便宜的主食闭眼入，整体性价比很高！
+#真实测评 #美食吐槽 #滁州美食 #鲜鱼巷亭城小吃集 #吃货日常
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content10">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板11 -->
+            <div class="note-card" id="template11">
+                <div class="tags-preview">【家乡味道篇】 #家乡的味道 #面食党</div>
+                <div class="title-section">
+                    <div class="title-preview">在滁州找到了老家味道！这碗油泼面香哭了！</div>
+                    <button class="title-copy-btn" data-target="title11">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">作为一个面食爱好者，终于在滁州找到了一碗好吃的油泼面！
+【老陕油泼面】13.8元，宽面非常筋道！
+辣椒面、葱花、蒜末铺得满满的，服务员端着热油上来当场浇上去，"滋啦"一声，香气瞬间就出来了！
+-
+赶紧拌匀，让每根面条都裹上辣子和醋香，酸辣开胃，吃起来超级过瘾！
+就是老家那个味儿！满足了！
+#家乡的味道 #油泼面 #面食党 #滁州探店 #好吃的面
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content11">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板12 -->
+            <div class="note-card" id="template12">
+                <div class="tags-preview">【减肥破戒篇】 #真香现场 #美食不可辜负</div>
+                <div class="title-section">
+                    <div class="title-preview">说好减肥的…结果没忍住干完了一整碗酸辣粉！</div>
+                    <button class="title-copy-btn" data-target="title12">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">今天立下Flag只吃健康餐…
+结果路过鲜鱼巷，脚就不听使唤地走进去了…
+-
+【招牌酸辣粉】12.8元，红薯粉超级Q弹！
+酸豆角、花生碎、肉酱给的超多，汤底酸辣过瘾，一口就上头！
+一边在心里忏悔，一边暴风吸入，最后连汤都喝得差不多了…
+-
+算了，吃饱了才有力气减肥！明天再开始吧！
+#减肥破戒 #真香现场 #酸辣粉 #美食不可辜负 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content12">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板13 -->
+            <div class="note-card" id="template13">
+                <div class="tags-preview">【带娃用餐篇】 #宝妈带娃 #亲子餐厅</div>
+                <div class="title-section">
+                    <div class="title-preview">发现一家带娃也能安心吃的小店！宝宝狂炫番茄米线！</div>
+                    <button class="title-copy-btn" data-target="title13">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">带娃出门吃饭最头疼的就是找她能吃的东西。
+这家店的【番茄酥肉米线】简直是小朋友的天菜！
+-
+番茄汤底特别浓郁自然，没有那种添加剂的味道。酥肉泡软了，宝宝用勺子就能自己吃，米线也煮得软软的。
+她自己就吃掉大半碗！老母亲我终于能安心吃自己的【麻酱凉皮】了！
+-
+分享给各位宝妈，又多了一个吃饭的选择！
+#宝妈带娃 #宝宝辅食 #亲子餐厅 #番茄米线 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content13">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板14 -->
+            <div class="note-card" id="template14">
+                <div class="tags-preview">【碳水快乐篇】 #碳水炸弹 #吃货的快乐</div>
+                <div class="title-section">
+                    <div class="title-preview">碳水怪集合！油泼面+拌粉+锅巴饭， triple碳水的快乐！</div>
+                    <button class="title-copy-btn" data-target="title14">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">今天和@XXX 进行了疯狂的碳水之旅！目标是鲜鱼巷！
+-
+【老陕油泼面】的面条筋道香辣！【南昌拌粉】的米粉爽滑入味！【腊味煲仔饭】的锅巴焦香酥脆！
+三种不同的碳水，三种不同的快乐在嘴里爆炸！真的太满足了吧！
+-
+快乐就是这么简单！减肥？明天再说！
+#碳水快乐 #碳水炸弹 #美食合集 #鲜鱼巷亭城小吃集 #吃货的快乐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content14">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板15 -->
+            <div class="note-card" id="template15">
+                <div class="tags-preview">【情怀小吃篇】 #城市记忆 #美食日记</div>
+                <div class="title-section">
+                    <div class="title-preview">为了这碗面，我愿意永远留在滁州！巷子里的神仙拌面！</div>
+                    <button class="title-copy-btn" data-target="title15">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">从前觉得滁州是美食荒漠，直到我遇见了它。
+藏在闹市巷口，没有豪华的装修，只有飘散十里勾人魂魄的香气。
+-
+「二嫂葱油拌面」是招牌，8.8元的价格是这座城市对食客最大的温柔。
+面条是定制的，劲道爽滑；葱油是每天现熬的，焦香不苦。海苔碎和泡萝卜是点睛之笔，一个增鲜，一个解腻。
+拌开的瞬间，香气扑鼻，三十秒内必须动筷，是对美食最基本的尊重。
+-
+吃到最后一口，盘底只剩油光，意犹未尽。
+这碗面，让我和这座城市，有了最温暖的连接。
+#城市记忆 #美食日记 #葱油拌面 #滁州生活 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content15">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板16 -->
+            <div class="note-card" id="template16">
+                <div class="tags-preview">【终极攻略篇】 #美食攻略 #跟着我吃不踩雷</div>
+                <div class="title-section">
+                    <div class="title-preview">鲜鱼巷终极点单攻略！20种菜品亲测推荐！</div>
+                    <button class="title-copy-btn" data-target="title16">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">N刷鲜鱼巷之后，整理出的终极点单攻略！收好不谢！
+-
+必点王者（闭眼入系列）：
+葱油拌面(8.8)、蚝油素鸡(7)、金汤/番茄系列米线(18)、红油鸡丁米粉(15)
+-
+实力推荐（看喜好点）：
+老陕油泼面(13.8)、南昌拌粉(8.8)、砂锅系列、腊味煲仔饭(23)、香辣牛肉米线(22)
+-
+解腻伴侣：
+秘制酸梅汁(3)、红豆酒酿饮(8-第二杯半价)
+-
+以上仅代表个人口味！欢迎补充！
+#点单攻略 #美食攻略 #鲜鱼巷亭城小吃集 #滁州美食攻略 #跟着我吃不踩雷
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content16">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板17 -->
+            <div class="note-card" id="template17">
+                <div class="tags-preview">【工作餐篇】 #打工人日常 #工作餐推荐</div>
+                <div class="title-section">
+                    <div class="title-preview">打工人午休觅食！15元搞定一顿丰盛工作餐！</div>
+                    <button class="title-copy-btn" data-target="title17">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">告别油腻外卖！公司附近的宝藏小店！
+【红油鸡丁米粉】15元，【酸豇豆炒饭】15元，性价比绝了！
+-
+出餐速度很快，不用等很久。米粉酸辣开胃，瞬间唤醒下午的精力。炒饭锅气十足，酸豆角超级解腻！
+-
+已经连续吃一周了，同事都被我安利来了！打工人冲！
+#工作餐 #今天午餐长这样 #打工人日常 #滁州工作餐 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content17">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板18 -->
+            <div class="note-card" id="template18">
+                <div class="tags-preview">【广式风味篇】 #广式腊味 #煲仔饭爱好者</div>
+                <div class="title-section">
+                    <div class="title-preview">在滁州也能吃到正宗广式腊味煲仔饭！锅巴太绝了！</div>
+                    <button class="title-copy-btn" data-target="title18">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">没想到在一家小吃店吃到了这么正的煲仔饭！
+【腊味煲仔饭】23元，用的是正宗广式腊肠，酒香味很浓。
+-
+酱汁是单独给的，自己浇上去，呲啦一声超有仪式感。最喜欢锅底那层金黄的锅巴，又香又脆，挖着吃太快乐了！
+窝一个流心蛋，戳破后蛋液裹着米饭和腊肠，一口超满足！
+#广式腊味煲仔饭 #煲仔饭 #锅巴 #滁州美食 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content18">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板19 -->
+            <div class="note-card" id="template19">
+                <div class="tags-preview">【无辣不欢篇】 #重口味必吃 #无辣不欢</div>
+                <div class="title-section">
+                    <div class="title-preview">重口味爱好者集合！这碗香辣肥肠米线直接封神！</div>
+                    <button class="title-copy-btn" data-target="title19">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">作为一个无辣不欢的人，这碗【香辣肥肠米线】直接把我拿捏了！
+22元一碗，肥肠处理得超级干净，没有一点异味，卤得软糯又带着嚼劲。
+-
+米线浸在红油汤里，香辣过瘾，吃起来大汗淋漓，超级爽！
+吃完直接宣布，这是我近期的最爱！重口味星人一定要试试！
+#香辣肥肠米线 #重口味必吃 #米线党 #鲜鱼巷亭城小吃集 #无辣不欢
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content19">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板20 -->
+            <div class="note-card" id="template20">
+                <div class="tags-preview">【拍照打卡篇】 #复古风 #拍照打卡</div>
+                <div class="title-section">
+                    <div class="title-preview">CCD相机直出！这家店也太有90年代巷口小吃的感觉了吧！</div>
+                    <button class="title-copy-btn" data-target="title20">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">路过这家店，直接被它的门头吸引了！
+暖黄色的灯光，复古的招牌，好像瞬间穿越回90年代的老巷口。
+-
+用CCD相机拍照根本不用调色，原图直出就超有氛围感！食物摆盘也很上镜，砂锅咕嘟冒泡，拌面色泽油亮。
+-
+九宫格根本放不下！拍照打卡宝藏地+1！
+#CCD相机 #复古风 #拍照打卡 #街边小吃 #鲜鱼巷亭城小吃集
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="content20">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 真实素人风 -->
+        <div class="notes-container hidden" id="real-style">
+            <!-- 模板1 -->
+            <div class="note-card" id="real-template1">
+                <div class="tags-preview">【随便吃点】 #日常美食 #实惠推荐</div>
+                <div class="title-section">
+                    <div class="title-preview">今天中午随便吃了个米线，结果被圈粉了</div>
+                    <button class="title-copy-btn" data-target="real-title1">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">中午在天长西路这边办事，不知道吃啥，看到这家店人挺多就进去了。点了个最便宜的那个砂锅丸子米线，15块钱。没想到料还挺多，丸子好几个，汤也挺鲜的。看到隔壁桌点的那个蚝油的东西好像很好吃，自己也加了个蚝油海带结，7块钱，是那个味！甜甜咸咸的，很好吃。下次再来试试别的。
+#随便吃点 #砂锅米线 #蚝油串 #实惠美食 #滁州小吃
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content1">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板2 -->
+            <div class="note-card" id="real-template2">
+                <div class="tags-preview">【选择困难】 #美食求助 #点餐推荐</div>
+                <div class="title-section">
+                    <div class="title-preview">求助！他家的酸豇豆炒饭和腊味煲仔饭到底点哪个？</div>
+                    <button class="title-copy-btn" data-target="real-title2">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">选择困难症又犯了。。。都想吃。上次吃了酸豇豆炒饭，11块9，酸豆角很开胃，米饭炒得粒粒分明的。这次想试试这个腊味煲仔饭，17块9，看图片有锅巴感觉好香啊！有没有两个都吃过的朋友告诉我一下哪个更值得点？在线等，反正我坐着没走。
+#选择困难症 #酸豇豆炒饭 #腊味煲仔饭 #美食求助 #点餐推荐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content2">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板3 -->
+            <div class="note-card" id="real-template3">
+                <div class="tags-preview">【饮品推荐】 #解腻饮品 #实惠好喝</div>
+                <div class="title-section">
+                    <div class="title-preview">银花这家店的红豆酒酿，我一周喝了三次……</div>
+                    <button class="title-copy-btn" data-target="real-title3">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">真的上头！8块钱一杯，甜甜的，里面红豆好多。主要是吃完米线或者拌面，喝这个特别解腻。跟我朋友一起来，她办了会员说第二杯半价，又薅到羊毛了。没啥说的，就是单纯觉得好喝，分享给你们。
+#红豆酒酿 #解腻饮品 #实惠好喝 #会员优惠 #饮品分享
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content3">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板4 -->
+            <div class="note-card" id="real-template4">
+                <div class="tags-preview">【下班美食】 #解压美食 #酸辣口味</div>
+                <div class="title-section">
+                    <div class="title-preview">没人能拒绝下班后的一碗酸辣粉吧？</div>
+                    <button class="title-copy-btn" data-target="real-title4">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">累死了一天，下班路过银花店，必须整碗重口的安慰自己。点了招牌酸辣粉，12块8。酸酸辣辣的，粉很Q弹，花生米和香菜是灵魂！还忍不住点了个麻辣鸭血，6块钱，嫩嫩的，一口粉一口鸭血，太舒服了。吃完感觉又能活了。
+#酸辣粉 #下班美食 #解压美食 #麻辣鸭血 #重口味
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content4">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板5 -->
+            <div class="note-card" id="real-template5">
+                <div class="tags-preview">【带娃用餐】 #亲子简餐 #儿童喜欢</div>
+                <div class="title-section">
+                    <div class="title-preview">带娃吃个简餐，居然被娃夸了</div>
+                    <button class="title-copy-btn" data-target="real-title5">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">带孩子上完兴趣班，就在旁边找了家店解决晚饭。给他点了个番茄酥肉米线，18块，番茄汤底很浓，小朋友全都喝光了。酥肉他也很喜欢。我自己吃了个雪菜肉丝手擀面，11块，肉丝特多，微辣，雪菜炒的也很好吃。主要是孩子喜欢，说下次还要来。
+#带娃用餐 #亲子简餐 #儿童美食 #番茄米线 #手擀面
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content5">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板6 -->
+            <div class="note-card" id="real-template6">
+                <div class="tags-preview">【小吃推荐】 #炸物小吃 #男友喜欢</div>
+                <div class="title-section">
+                    <div class="title-preview">男朋友说这家的小酥肉和鸡块比火锅店汉堡店的还好吃</div>
+                    <button class="title-copy-btn" data-target="real-title6">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">笑死，本来只是来吃个面（我吃的香辣牛肉米线，19，20不到牛肉还挺多），男朋友非要加点小吃。点了椒香小酥肉和黑椒鸡块，都是八块钱一份。结果他吃上瘾了，说炸得外酥里嫩，味道正好。差点又要点一份……行吧，确实不错。
+#小酥肉 #黑椒鸡块 #炸物小吃 #男友推荐 #小吃分享
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content6">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板7 -->
+            <div class="note-card" id="real-template7">
+                <div class="tags-preview">【夏日美食】 #清爽简餐 #经济实惠</div>
+                <div class="title-section">
+                    <div class="title-preview">有没有跟我一样，就爱吃这种简简单单的拌面</div>
+                    <button class="title-copy-btn" data-target="real-title7">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">天气热了没啥胃口，就想吃点凉的。他家的亭城凉皮和葱油拌面都是8块8。我个人更爱葱油拌面，葱油熬得香香的，面条不软不硬，配上点泡萝卜，清爽不腻。便宜又管饱，要啥自行车啊。
+#葱油拌面 #亭城凉皮 #夏日美食 #清爽简餐 #经济实惠
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content7">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板8 -->
+            <div class="note-card" id="real-template8">
+                <div class="tags-preview">【打工晚餐】 #上班族 #实惠套餐</div>
+                <div class="title-section">
+                    <div class="title-preview">偷偷分享我的打工晚餐组合</div>
+                    <button class="title-copy-btn" data-target="real-title8">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">在苏宁第五大道这边上班的姐妹可以试试！我经常下班不想做饭就来这。一份南昌拌粉8块8，加一个煎蛋2块块，再喝个3块钱的酸梅汁。十块钱出头吃得饱饱的，味道也好。这是我的标配，嘿嘿。
+#打工晚餐 #上班族美食 #实惠套餐 #南昌拌粉 #酸梅汁
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content8">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板9 -->
+            <div class="note-card" id="real-template9">
+                <div class="tags-preview">【地方特色】 #滁州小吃 #特色尝试</div>
+                <div class="title-section">
+                    <div class="title-preview">尝了下滁州特色的蚝油串，原来就是这个</div>
+                    <button class="title-copy-btn" data-target="real-title9">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">老是听人说蚝油串，今天在这家店看到了，点了个蚝油素鸡和蚝油年糕试试。原来是豆制品和年糕刷上蚝油酱汁，是甜咸口的，喷了醋，加了蒜汁和香菜，吃起来软软的。的确很好吃，像一种卤味。没吃过的可以试一下，7块钱一份。
+#蚝油串 #滁州特色 #地方小吃 #甜咸口味 #特色尝试
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content9">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板10 -->
+            <div class="note-card" id="real-template10">
+                <div class="tags-preview">【夜宵推荐】 #深夜治愈 #暖心夜宵</div>
+                <div class="title-section">
+                    <div class="title-preview">晚上饿了下楼吃夜宵，发现这家店还开着</div>
+                    <button class="title-copy-btn" data-target="real-title10">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">晚上快十点了，饿得睡不着，下楼觅食。发现天长西路这边这家鲜鱼巷二嫂米线还亮着灯，真好。点了个牛肉砂锅粉丝，19块钱，用砂锅端上来还在咕嘟咕嘟，暖暖和和的。晚上吃这种东西真的太治愈了，牛肉很多，粉丝很入味，晚上人少，安安静静吃完回家睡觉。
+#夜宵推荐 #深夜美食 #砂锅粉丝 #治愈夜宵 #暖心美食
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content10">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板11 -->
+            <div class="note-card" id="real-template11">
+                <div class="tags-preview">【夏日救星】 #凉爽美食 #开胃小吃</div>
+                <div class="title-section">
+                    <div class="title-preview">凉皮和拌粉，夏天救了我的命</div>
+                    <button class="title-copy-btn" data-target="real-title11">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">天气一热就不知道吃啥，和朋友在银花店点了亭城凉皮和南昌拌粉，都是8块8。凉皮有麻酱口味的麻酱给得挺多的，拌粉的辣味也刚好。吃起来凉快又开胃，舒服了。再加个3块的酸梅汁，完美。
+#凉皮 #拌粉 #夏日救星 #凉爽美食 #开胃小吃
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content11">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板12 -->
+            <div class="note-card" id="real-template12">
+                <div class="tags-preview">【长辈认可】 #家庭用餐 #妈妈喜欢</div>
+                <div class="title-section">
+                    <div class="title-preview">我妈说这家米线汤挺好喝的</div>
+                    <button class="title-copy-btn" data-target="real-title12">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">带我妈来尝尝，她点了番茄肥牛米线，18块。她说番茄汤挺浓的，不是那种粉冲的味道。肥牛也不少。我吃的香辣牛肉的，19，我觉得有点辣但很过瘾。我妈把她汤都喝完了，看来是认可了。
+#家庭用餐 #长辈认可 #番茄肥牛米线 #香辣牛肉米线 #妈妈喜欢
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content12">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板13 -->
+            <div class="note-card" id="real-template13">
+                <div class="tags-preview">【一人食】 #独处时光 #简单一餐</div>
+                <div class="title-section">
+                    <div class="title-preview">下班一个人不知道吃啥就会来这</div>
+                    <button class="title-copy-btn" data-target="real-title13">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">在天长西路店，经常一个人吃。最爱点红油鸡丁米粉，15块，鸡丁蛮多的，味道鲜。再加个蚝油素鸡，7块，甜咸口的很下饭（虽然吃的是粉）。安安静静吃一顿，十几块钱搞定，挺好。
+#一人食 #独处时光 #红油鸡丁米粉 #蚝油素鸡 #简单一餐
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content13">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板14 -->
+            <div class="note-card" id="real-template14">
+                <div class="tags-preview">【尝鲜体验】 #新奇尝试 #冬季暖食</div>
+                <div class="title-section">
+                    <div class="title-preview">尝试了一下传说中的砂锅米线</div>
+                    <button class="title-copy-btn" data-target="real-title14">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">看别人吃砂锅的好像很香，点了个砂锅腊肠过桥米线，17块。端上来还咕嘟咕嘟冒泡，腊肠是广式的那种甜口，汤挺鲜的。就是吃的时候要小心烫嘴，冬天吃这个肯定更爽。
+#砂锅米线 #尝鲜体验 #腊肠米线 #冬季暖食 #新奇尝试
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content14">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板15 -->
+            <div class="note-card" id="real-template15">
+                <div class="tags-preview">【省钱吃法】 #经济实惠 #穷鬼套餐</div>
+                <div class="title-section">
+                    <div class="title-preview">分享一个便宜的吃法</div>
+                    <button class="title-copy-btn" data-target="real-title15">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">葱油拌面8块8，加个卤鹌鹑蛋（菜单上6块），再点杯酸梅汤。十几块钱吃得挺饱，拌面味道不错，葱油挺香的。适合我这种穷鬼。
+#省钱吃法 #经济实惠 #穷鬼套餐 #葱油拌面 #酸梅汤
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content15">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板16 -->
+            <div class="note-card" id="real-template16">
+                <div class="tags-preview">【小吃发现】 #素食小吃 #意外惊喜</div>
+                <div class="title-section">
+                    <div class="title-preview">他家的酥炸蘑菇比肉还好吃</div>
+                    <button class="title-copy-btn" data-target="real-title16">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">第一次点酥炸蘑菇，7块钱一份。外面炸得酥酥的，里面蘑菇又很嫩，撒了椒盐粉之类的，热乎乎的时候吃根本停不下来。比那些炸鸡块好吃，感觉像在吃小零食。安利！
+#酥炸蘑菇 #素食小吃 #意外惊喜 #零食替代 #美味小吃
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content16">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板17 -->
+            <div class="note-card" id="real-template17">
+                <div class="tags-preview">【夜宵选择】 #外卖体验 #解馋美食</div>
+                <div class="title-section">
+                    <div class="title-preview">晚上饿了，吃碗酸辣粉凑合一下</div>
+                    <button class="title-copy-btn" data-target="real-title17">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">半夜饿了点外卖，看到酸辣粉12块8就点了。送来速度还挺快，粉是那种很粗的红薯粉，没坨。配上酸豆角和花生米是分开。味道就是很地道的酸辣味，尤其酸味够，适合我这种爱酸的，解馋够了，分量对女生刚好。
+#夜宵选择 #外卖体验 #酸辣粉 #解馋美食 #深夜外卖
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content17">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板18 -->
+            <div class="note-card" id="real-template18">
+                <div class="tags-preview">【煲仔饭体验】 #广式风味 #锅巴爱好者</div>
+                <div class="title-section">
+                    <div class="title-preview">今天终于吃了他们说的煲仔饭</div>
+                    <button class="title-copy-btn" data-target="real-title18">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">惦记了好久，这次点了腊味煲仔饭，17.9块。等的时间稍微长一点，但锅巴确实好多！腊肠也好吃。把蛋搅开和饭混在一起，还有那个酱汁，淋上以后味道太正了广式煲仔饭味。每一口都有锅巴和蛋，口感绝了。分量对我来说有点大，没吃完。
+#煲仔饭体验 #广式风味 #锅巴爱好者 #腊味煲仔饭 #美食体验
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content18">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板19 -->
+            <div class="note-card" id="real-template19">
+                <div class="tags-preview">【炒饭推荐】 #开胃主食 #干饭人最爱</div>
+                <div class="title-section">
+                    <div class="title-preview">随便点的炒饭居然还不错</div>
+                    <button class="title-copy-btn" data-target="real-title19">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">不想吃带汤的，就点了个酸豇豆炒饭，11.9块。酸豆角酸酸的特别开胃，里面还有肉沫，米饭炒得干干的，我很喜欢这种口感。一口气扒完了一盘，下次还会点。
+#炒饭推荐 #开胃主食 #酸豇豆炒饭 #干饭人最爱 #简单美食
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content19">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
+            </div>
+            
+            <!-- 模板20 -->
+            <div class="note-card" id="real-template20">
+                <div class="tags-preview">【姐妹小聚】 #闺蜜午餐 #休闲时光</div>
+                <div class="title-section">
+                    <div class="title-preview">小姐妹的午餐约会</div>
+                    <button class="title-copy-btn" data-target="real-title20">复制标题</button>
+                </div>
+                <div class="content-section">
+                    <div class="note-content">和姐妹出来逛，顺便在这解决午饭。她点了金汤什么米线，我忘了，我点的麻辣鸡杂米粉，16。我说我的好吃！鸡杂处理得没啥异味，麻麻辣辣的很够味。她的金汤应该是酸辣的，她都快把汤喝完了。聊聊天吃吃饭，人均十几，挺惬意的。
+#姐妹小聚 #闺蜜午餐 #麻辣鸡杂米粉 #金汤米线 #休闲时光
+@鲜鱼巷小吃二嫂米线</div>
+                    <button class="content-copy-btn" data-target="real-content20">复制正文</button>
+                </div>
+                <div class="expand-icon">
+                    <i class="fas fa-chevron-down"></i>
+                </div>
             </div>
         </div>
     </div>
@@ -214,28 +1099,66 @@ p10：酸豇豆炒饭
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const copyButtons = document.querySelectorAll('.copy-btn');
+            const noteCards = document.querySelectorAll('.note-card');
             const toast = document.getElementById('toast');
+            let expandedCard = null;
             
+            // 为每个卡片添加点击事件
+            noteCards.forEach(card => {
+                card.addEventListener('click', function(e) {
+                    // 如果点击的是复制按钮，不触发展开/折叠
+                    if (e.target.classList.contains('title-copy-btn') || 
+                        e.target.classList.contains('content-copy-btn') ||
+                        e.target.closest('.title-copy-btn') || 
+                        e.target.closest('.content-copy-btn')) {
+                        return;
+                    }
+                    
+                    // 如果当前卡片已经展开，则折叠它
+                    if (this.classList.contains('expanded')) {
+                        this.classList.remove('expanded');
+                        expandedCard = null;
+                    } else {
+                        // 折叠之前展开的卡片
+                        if (expandedCard) {
+                            expandedCard.classList.remove('expanded');
+                        }
+                        
+                        // 展开当前卡片
+                        this.classList.add('expanded');
+                        expandedCard = this;
+                    }
+                });
+            });
+            
+            // 获取所有复制按钮
+            const copyButtons = document.querySelectorAll('.title-copy-btn, .content-copy-btn');
+            
+            // 为每个按钮添加点击事件
             copyButtons.forEach(button => {
-                button.addEventListener('click', function() {
+                button.addEventListener('click', function(e) {
+                    e.stopPropagation(); // 阻止事件冒泡，避免触发卡片展开/折叠
+                    
                     const target = this.getAttribute('data-target');
                     let textToCopy = '';
                     
-                    if (target.startsWith('title')) {
-                        const index = target.replace('title', '');
-                        const titleElement = document.querySelector(`#template${index} .note-title`);
+                    if (target.startsWith('title') || target.startsWith('real-title')) {
+                        const id = target.replace('title', '').replace('real-', '');
+                        const titleElement = document.querySelector(`#${target.startsWith('real-') ? 'real-template' : 'template'}${id} .title-preview`);
                         textToCopy = titleElement.textContent;
-                    } else if (target.startsWith('content')) {
-                        const index = target.replace('content', '');
-                        const contentElement = document.querySelector(`#template${index} .note-content`);
+                    } else if (target.startsWith('content') || target.startsWith('real-content')) {
+                        const id = target.replace('content', '').replace('real-', '');
+                        const contentElement = document.querySelector(`#${target.startsWith('real-') ? 'real-template' : 'template'}${id} .note-content`);
                         textToCopy = contentElement.textContent;
                     }
                     
+                    // 使用Clipboard API复制文本
                     navigator.clipboard.writeText(textToCopy).then(() => {
+                        // 显示成功提示
                         toast.textContent = '复制成功！';
                         toast.classList.add('show');
                         
+                        // 2秒后隐藏提示
                         setTimeout(() => {
                             toast.classList.remove('show');
                         }, 2000);
@@ -248,6 +1171,35 @@ p10：酸豇豆炒饭
                             toast.classList.remove('show');
                         }, 2000);
                     });
+                });
+            });
+            
+            // 风格切换功能
+            const styleTabs = document.querySelectorAll('.style-tab');
+            const notesContainers = document.querySelectorAll('.notes-container');
+            
+            styleTabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    const target = this.getAttribute('data-target');
+                    
+                    // 更新活跃标签
+                    styleTabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // 显示对应的内容容器
+                    notesContainers.forEach(container => {
+                        if (container.id === target) {
+                            container.classList.remove('hidden');
+                        } else {
+                            container.classList.add('hidden');
+                        }
+                    });
+                    
+                    // 折叠所有卡片
+                    noteCards.forEach(card => {
+                        card.classList.remove('expanded');
+                    });
+                    expandedCard = null;
                 });
             });
         });
